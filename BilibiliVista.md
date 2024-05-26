@@ -1,27 +1,29 @@
----
-Create Time: 19th May 2024
-Title: "[[BilibiliVista]]"
-status: DONE
-Author:
-  - AllenYGY
-tags:
-  - Project
-  - Python
-  - DPW
-created: 2024-05-19T19:57
-updated: 2024-05-26T20:19
----
+# [BilibiliVista](https://github.com/BiliVista)
 
-# [[BilibiliVista]]
+## Overview
 
-- *Bilibili data analysis platform*
-- *Sentiment analysis based on deep learning*
+Firstly,We have implemented an automated movie review scraper to quickly obtain a large volume of movie reviews and ratings data. Based on this dataset (over 50,000 entries), we trained and implemented two favorability rate analysis models: one based on a favorability rate dictionary and Naive Bayes (machine learning), and another retrained on a transformer with whole word masking pre-training. Additionally, we developed a scraper capable of dynamically obtaining Bilibili video information (comments, bullet chats, etc.). Finally, we integrated these features using FastAPI to achieve front-end and back-end separation, supporting dynamic retrieval of Bilibili-related information and favorability rate analysis of comments on specified Bilibili videos using the two trained models, with dynamic data presentation to the front end.
 
-## Design Overview
+## Core Features
 
-![DPW-Overview](img/DPW.png)
+1. **Automated Movie Review Scraper**:
+   - Rapidly obtains a large volume of movie reviews and ratings data.
 
-***Project Overview***
+2. **favorability rate Analysis Models**:
+   - **Model 1**: favorability rate dictionary combined with Naive Bayes (machine learning).
+   - **Model 2**: Transformer-based model with whole word masking pre-training, retrained for favorability rate analysis.
+
+3. **Dynamic Bilibili Video Information Scraper**:
+   - Fetches detailed video information including comments and bullet chats dynamically.
+
+4. **FastAPI-based Front-End and Back-End Integration**:
+   - Supports dynamic retrieval of Bilibili-related information.
+   - Facilitates dynamic favorability rate analysis of specified Bilibili video comments using the two trained models.
+   - Provides real-time data presentation to the front end.
+
+## Core Workflow
+
+![Core Workflow](img/DPW.png)
 
 1. **Data Acquisition**
     - *Crawling Movie Comments*
@@ -32,9 +34,9 @@ updated: 2024-05-26T20:19
 
 2. **Model Training**
     - *Machine Learning Model*
-        - Utilize **SnowNLP** for sentiment analysis and other natural language processing tasks.
+        - favorability rate dictionary combined with Naive Bayes (machine learning).
     - *Deep Learning Model*
-        - Employ **PaddleNLP** to build and train deep learning models for advanced text analysis.
+        - Transformer-based model with whole word masking pre-training, retrained for favorability rate analysis.
 
 3. **Model Application**
     - *Crawling Data from `Bilibili`*
@@ -44,43 +46,37 @@ updated: 2024-05-26T20:19
     - *Frontend Development*
         - Implement a user-friendly interface to visualize and interact with the analysis results.
 
+## Dataset
 
-## Data Acquisition
+### ***Sources of Our Data***
 
-### Data Acquisition: Selecting the Right Dataset
-
-***Sources of Our Data***
-
-- ***Douban***: A prominent movie site where users freely express their opinions on movies. These comments are often labeled by users' sentiments, making them invaluable for our analysis.
+- ***Douban***: A prominent movie site where users freely express their opinions on movies. These comments are often labeled by users' favorability rates, making them invaluable for our analysis.
 - ***Maoyan***: Another key player in the movie industry with a rich database of user comments, similarly labeled, allowing for comparative studies and robust model training.
 
-***Why These Datasets?***
+### ***Automated crawler to scrape movie reviews***
 
-- ***Labeled Data***: We chose to focus on comments from *Douban* and *Maoyan* because they offer labeled datasets. This is critical as labeled data provides a foundation for training and evaluating our sentiment analysis models with higher accuracy.
+To quickly acquire a large dataset, we wrote an automated crawler for movie reviews to simplify the task. It can automatically scrape movie reviews and rating information from Douban and Maoyan.
+
+Additionally, we have also open-sourced this crawler on [GitHub](https://github.com/open17/movie-comment-spider).
+
+### ***Why These Datasets?***
+
+- ***Labeled Data***: We chose to focus on comments from *Douban* and *Maoyan* because they offer labeled datasets. This is critical as labeled data provides a foundation for training and evaluating our favorability rate analysis models with higher accuracy.
 
 ![Comment on Douban and Maoyan](img/Comment.png)
 
-
-### Data Preprocess: Splitting the dataset
-
-![Data Preparation](img/DataPreparation.png)
-
-1. ***Data Categorization***
-	- Negative dict: ratings less than or equal to 3
-	- Positive dict: ratings greater than 3
-2. ***Dataset Splitting***
-	- Random Split
-3. ***Training and Testing set***
-	- Training set : Test set = 8:2
-
 ## Model Training
 
-### SnowNLP 
+### Model: Machine Learning
 
-- ***`SnowNLP`*** is a library focused on natural language processing tasks for Chinese text, such as sentiment analysis and text processing.
-- Uses the labeled training data to train the classifier using the ***`Naive Bayes`*** algorithm.
+#### Model Introduction
 
-#### Naive Bayes Algorithm
+- Here we use `favorability rate dictionary` combined with `Naive Bayes` which is based on SnowNLP.^[`SnowNLP` is a library focused on natural language processing tasks for Chinese text, such as favorability rate analysis and text processing.]
+- According the dataset we gained from crawl data (**50000+ entries**), Randomly spilit the dataset into traning dataset and test dataset (8:2).
+
+#### More Detail
+
+##### Naive Bayes Algorithm
 
 - *Assumes* that features are **independent** of each other.
 - *Estimates* probabilities based on the features and labels in the training dataset.
@@ -90,58 +86,21 @@ $$x_i = (x^1, \ldots, x^n)$$
 $$y_i = c_k \quad and \quad k = 1 \ldots K$$
 $$y = \arg\max_{c_k} P(y = c_k) \prod_{j} P(x^j | y = c_k)$$
 
-#### Split characters
+##### Split characters
 
 ***Split Chinese characters*** and calculate the probability that the term appears in the set
 
 ![Cut Chinese Comment](img/CutComment.png)
 
-#### Training Result
+### Model: Deep Learning
 
-| Method  | Test Dataset Accuracy |
-| ------- | --------------------- |
-| SnowNLP | 78.58%                |
-| KNN     | 78.32%                |
+#### Model Introduction
 
-#### SnowNLP Model Evaluation
-
-1. ***Comment of Movie***
-
-- Crawl the Comment of the Movie 《 Wandering Earth 2》 From  the `Bilibili`
-  
-2. ***Estimation the comment score***
-
-- Get a comment sentiment score using the trained SnowNLP model.
-- Average comment sentiment score is only 0.54. (Calculate method In the appendix )
-
-3. ***Comment Score Distribution***
-
-- The distribution is polarized, it does not work well
-![SnowNLP Comment Score Distribution ](img/SnowNLPResult.png)
-
-4. ***Comment Score Example***
-
-|Comment|Like|Sentiment|Sentiment x Like|
-|---|---|---|---|
-|六公主给流浪地球2的颁奖词：  <br>这是中国电影工业的一次全面跨越升级，以硬实力将中国科幻电影提升到前所未有的境界，7万多字原创剧本，2万多名工作人员，90多万平方米的置景总面积，历时1400余天的摄制，奉上一场2小时53的视觉盛宴。  <br>如此庞大精良的制作规模，造就了影片同名话题超11.8亿的网络关注量，收获40.23亿票房。  <br>M大数据显示，影片传播指数达9.8，位列年度影片之首。  <br>片中昂扬的中国精神，如同闪耀的星群，照耀着中国科幻电影前进的方向。|13621|4.14E-11|5.64E-07|
-|其实导演郭帆不是半路出家，而是从小励志拍科幻片。  <br>郭帆15岁时看了卡梅隆的《终结者2》，然后立志以后拍科幻片，他高考本来要考电影学院，但山东省没有招生导演系的，郭帆母亲也劝他考法律后当个政法委总书记就行。  <br>郭帆考上法律专业后想如果自己以后不奔着梦想去，等晚年躺病床、摇椅就特别后悔，所以他就觉得不管选什么专业，只要奔着哪个目标去，然后他大学也拍过电影短片，而且他学过法律学专业很适合工业化方面。  <br>还有郭帆小时候画画很好，也拿过奖，有美术基础的。所以不要总半路出家、非科班、中途转行也能成功，搞得好像人家外行的行我也行，郭帆是自己本来就有这梦想、本来就有相关知识、而且他29岁时还考上北京电影学院管理系研究生。|7597|0.000216|1.639879|
-|中国科幻元年必定是1999年。  <br>郭帆在这一年高考，而且这一年的《科幻世界》压中了高考作文《假如记忆可以移植》，郭导看过并且受到启发拿了高分，同年也是大刘在科幻世界上开始首次投发文章《微观尽头》和《鲸歌》，次年就投发了《流浪地球》。同年高中生谢楠在1月的科幻世界发表了短篇奇想，页码43是吴京的生日4月3号。|6672|8.11E-10|5.41E-06|
-
-**It turns out that the model does not work well in practice**
-
-### PaddleNLP
-
-#### Pre-training model `ERNIE (Like Bert-wwm)`
-
-- *With the development of deep learning*, the number of model parameters has increased rapidly, and in order to train these parameters, larger data sets are needed to avoid overfitting.
 - *Nowadays*,  studies have shown that `Pretrained Models` (PTM) based on large-scale unlabeled corpora can acquire generic language representations and perform well when fine-tuned to downstream tasks.
-- *In addition*, pre-training models can avoid training models from scratch.
+- Here we use Transformer-based model with whole word masking pre-training, retrained for favorability rate analysis which is based on Pre-training model `ERNIE` (Like Bert-wwm)
+- According the dataset we gained from crawl data (**50000+ entries**), Randomly spilit the dataset into traning dataset, dev dataset(Used to dynamically adjust hyperparameters) and test dataset.
 
-![Contex2Vec](img/Contex2Vec.png)
-
-- **BERT** requires minimal architecture changes for a wide range of natural language processing applications.
-
-#### Training Process
+#### More Details
 
 1. ***Remove*** a batch data from the `dataloader`
 2. ***Feed batch data*** to the model for `forward calculation`
@@ -150,32 +109,43 @@ $$y = \arg\max_{c_k} P(y = c_k) \prod_{j} P(x^j | y = c_k)$$
 
 **Each time an epoch is trained, the program will evaluate the effectiveness of the current model training.**
 
-#### Training Result
+### Model Evaluation
+
+#### Test Accuracy
 
 |Method|Test Dataset Accuracy|
 |---|---|
 |SnowNLP|78.58%|
 |PaddleNLP|85.31%|
 
-#### PaddleNLP Model Evaluation
+#### Generalizability Test
 
-1. ***Comment of Movie***
+In order to test the generalizability of our model. We crawl the comment of the movie *《Wandering Earth 2》* From  the `Bilibili`, and analyze it with two models respectively.
 
-- Crawl the Comment of the Movie 《 Wandering Earth 2》 From  the `Bilibili`
+1. ***Estimation the comment score***
 
-2. ***Estimation the comment score***
+- Machine Learning: Average comment favorability rate score is only ***0.54***. (Calculate method In the appendix)
+- Deep Learning: Average comment favorability rate score is ***0.89***. (Calculate method In the appendix)
 
-- Get a comment sentiment score using the trained PaddleNLP model.
-- Average comment sentiment score is 0.89. (Calculate method In the appendix )
+2. ***Favorability rate Score Distribution***
 
-3. ***Sentiment Score Distribution***
+- Machine Learning Comment Score Distribution:
+![SnowNLP Comment Score Distribution ](img/SnowNLPResult.png)
+The distribution is polarized
+- Deep Learning Comment Score Distribution:
+![Deep Learning Comment Score Distribution ](img/PaddleNLPResult.png)
 
-![PaddleNLP Comment Score Distribution ](img/PaddleNLPResult.png)
+**Obviously, the deep learning approach is more convincing, and the machine learning approach runs much faster than the deep learning approach.**
 
+## BiliVista
 
-## Model Application 
+### Bilibili information Crawler
 
-### Crawle Bilibili video info
+#### Crawler Introduction
+
+A crawler capable of dynamically obtaining Bilibili video information (comments, bullet chats, etc.) which will be used in the backend part.
+
+#### Crawler Details
 
 1. ***Set the User-Agent and cookie information***
 
@@ -187,7 +157,6 @@ Through `bvid` access to the comment information of the video including:
 ![User-Agent](img/User-Agent.png)
 
 2. ***Crawl video basic information***
-   
 
 Through `bvid` access to the basic information of the video including:
 
@@ -211,11 +180,16 @@ Through `bvid` request screen XML file obtained through basic information:
 
 ### Backend
 
+#### Backend Introduction
+
+Those features talking about above will be used in backend according to `FastAPI` (backend framwork) to achieve front-end and back-end separation, supporting dynamic retrieval of Bilibili-related information and favorability rate analysis of comments on specified Bilibili videos using the two trained models, with dynamic data presentation to the front end.
+
+#### Backend Details
+
 ***Why FastAPI?***
 
 *“FastAPI is a modern, fast (high-performance) web framework for building APIs with Python 3.6+.”*
 
-***Key Advantages: ***
 - High performance
 - Rapid development
 - Automatic interactive API documentation
@@ -226,48 +200,55 @@ Through `bvid` request screen XML file obtained through basic information:
 ***Introduction to the three main API categories: `video`, `videos`, `newvideo`***
 
 - Usage of 3 APIs:
-	- **video**: Fetch specific video information.
-	 - **videos**: Gather statistics on all scraped videos.
-	 - **newvideo**: Add new video data to the system.
+  - **video**: Fetch specific video information.
+  - **videos**: Gather statistics on all scraped videos.
+  - **newvideo**: Add new video data to the system.
 
 ### Frontend
 
-## Appendix
+In this part, we use `Vue3 + Typescripts + Arco Design + Vue-18n + Vite` and connect the python backend to visualize data.
 
-### Sentiment Score Calculate Method
+![alt text](image-2.png)
 
-1. Compute the values for the $sentiment\_like$ column:
-$$
-   \text{{sentiment\_like}}_i = \text{{sentiment}}_i \times \text{{like}}_i
-$$
+### Visualization details
 
-   Here, $\text{{sentiment}}_i$ and $\text{{like}}_i$ represent the values of the $sentiment$ and $like$ columns for the $i$-th row, respectively, and $\text{{sentiment\_like}}_i$ is the result of their product, stored in a new column $sentiment_like$.
+#### Favoriate-Like-Coin Rate
 
-2. Calculate the ratio of the sum of the $sentiment_like$ column to the sum of the $like$ column, which represents the mean sentiment value:
-   $$
-   \text{{mean\_sentiment}} = \frac{{\sum (\text{{sentiment\_like}}_i)}}{{\sum (\text{{like}}_i)}}
-   $$
-   Here, $\sum (\text{{sentiment\_like}}_i)$ is the sum of all values in the $sentiment_like$ column, and $\sum (\text{{like}}_i)$ is the sum of all values in the $like$ column. This ratio represents the weighted average sentiment value, where the weight for each comment is its number of likes.
+- Backend
 
+![3lian](img/3lianbackend.png)
 
-### Presentation
+- Frontend
 
-![Slide](ppt/Slide1.png)
-![Slide](ppt/Slide2.png)
-![Slide](ppt/Slide3.png)
-![Slide](ppt/Slide4.png)
-![Slide](ppt/Slide5.png)
-![Slide](ppt/Slide6.png)
-![Slide](ppt/Slide7.png)
-![Slide](ppt/Slide8.png)
-![Slide](ppt/Slide9.png)
-![Slide](ppt/Slide10.png)
-![Slide](ppt/Slide11.png)
-![Slide](ppt/Slide12.png)
-![Slide](ppt/Slide13.png)
-![Slide](ppt/Slide14.png)
-![Slide](ppt/Slide15.png)
-![Slide](ppt/Slide16.png)
-![Slide](ppt/Slide17.png)
-![Slide](ppt/Slide18.png)
-![Slide](ppt/Slide19.png)
+![alt text](img/3lianfront.png)
+
+#### Popular Rank
+
+- Backend
+
+![PopularRankbackend](img/PopularRankbackend.png)
+
+- Frontend
+
+![alt text](image-3.png)
+
+#### Video infos
+
+- Backend
+
+![alt text](image.png)
+
+- Frontend
+![alt text](image-4.png)
+
+#### Video Comments
+
+- Backend
+![alt text](image-1.png)
+
+- Frontend
+![alt text](image-5.png)
+
+### Part of backend code
+
+![alt text](code-1.png)
