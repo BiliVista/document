@@ -1,4 +1,29 @@
-# [BilibiliVista](https://github.com/BiliVista)
+---
+created: 2024-05-26T21:26
+updated: 2024-05-26T23:52
+---
+
+# Bilibili Vista
+
+- Our codes are open source on github
+[BilibiliVista](https://github.com/BiliVista)
+
+## Quick Start
+
+- For Backend
+
+```shell
+cd backend
+python main.py
+```
+
+- For Frontend 
+```shell
+cd frontend/code
+npm i
+npm run dev
+```
+
 
 ## Overview
 
