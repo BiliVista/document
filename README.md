@@ -17,13 +17,13 @@ cd backend
 python main.py
 ```
 
-- For Frontend 
+- For Frontend
+
 ```shell
 cd frontend/code
 npm i
 npm run dev
 ```
-
 
 ## Overview
 
@@ -233,7 +233,7 @@ Those features talking about above will be used in backend according to `FastAPI
 
 In this part, we use `Vue3 + Typescripts + Arco Design + Vue-18n + Vite` and connect the python backend to visualize data.
 
-![alt text](image-2.png)
+![Main Page](img/MainPage.png)
 
 ### Visualization details
 
@@ -255,25 +255,25 @@ In this part, we use `Vue3 + Typescripts + Arco Design + Vue-18n + Vite` and con
 
 - Frontend
 
-![alt text](image-3.png)
+![Popular Rank](img/PopularRank.png)
 
 #### Video infos
 
 - Backend
 
-![alt text](image.png)
+![VideoInfos](img/VideoInfos.png)
 
 - Frontend
-![alt text](image-4.png)
+![VideoCards](img/VideoCards.png)
 
 #### Video Comments
 
 - Backend
-![alt text](image-1.png)
+![alt text](img/TableBackend.png)
 
 - Frontend
-![alt text](image-5.png)
+![alt text](img/Table.png)
 
 ### Part of backend code
 
-![alt text](code-1.png)
+![Backend Code](img/BackendCode.png)
